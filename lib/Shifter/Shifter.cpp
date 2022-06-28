@@ -1,6 +1,6 @@
 #include "Shifter.h"
 
-#define BASE_SHIFT_FACTOR 20
+#define BASE_SHIFT_FACTOR 10
 #define SHIFT_STARTING_POSITION 90
 
 #define MAX_SHIFT_POSITION 180
