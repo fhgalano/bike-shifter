@@ -36,3 +36,6 @@
 *.exe
 *.out
 *.app
+
+# Linter Config
+CPPLINT.cfg
