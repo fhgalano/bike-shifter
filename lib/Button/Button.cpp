@@ -8,7 +8,14 @@ Button::Button(uint8_t pin, bool active_mode, bool active_on_release) {
     this->active_logic_level = active_mode;
     this->active_on_release = active_on_release;
 
+    // Configure hardware
+    pinMode(this->pin, INPUT);
+
     this->init();
+}
+
+Button::Button() {
+    init();
 }
 
 bool Button::get_state() {
@@ -27,9 +34,6 @@ void Button::detection_handler() {
 
 // Private
 void Button::init() {
-    // Configure hardware
-    pinMode(this->pin, INPUT);
-
     // Setup initial state
     this->active_flag = false;
     this->current_state = false;

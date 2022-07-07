@@ -38,6 +38,7 @@ class Button {
     bool state_is_active();
 
  public:
+    Button();
     Button(uint8_t pin, bool active_mode, bool active_on_release);
     bool get_state();
     void detection_handler();
