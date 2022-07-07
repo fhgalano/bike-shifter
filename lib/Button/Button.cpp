@@ -1,6 +1,7 @@
 #include "Button.h"
 
 
+// Public
 Button::Button(uint8_t pin, bool active_mode, bool active_on_release) {
     // Set object properties
     this->pin = pin;
@@ -10,6 +11,16 @@ Button::Button(uint8_t pin, bool active_mode, bool active_on_release) {
     this->init();
 }
 
+bool Button::get_state() {
+    bool state = this->active_flag;
+    if (state) {
+        this->set_flag_inactive();
+    }
+
+    return state;
+}
+
+// Private
 void Button::init() {
     // Configure hardware
     pinMode(this->pin, INPUT);
@@ -22,12 +33,21 @@ void Button::init() {
     this->active_time = 0;
 }
 
+void Button::detection_handler() {
+    this->detect_state();
+    this->state_handler(this->state_is_active());
+}
+
 void Button::detect_state() {
     if (this->state_is_active()) {
         this->current_state = ACTIVE;
     } else {
         this->current_state = INACTIVE;
     }
+}
+
+bool Button::state_is_active() {
+    return digitalRead(this->pin) && this->active_logic_level;
 }
 
 void Button::state_handler(bool current_state) {
@@ -41,7 +61,7 @@ void Button::state_handler(bool current_state) {
 void Button::active_on_release_handler(bool current_state) {
     if ((this->last_state == ACTIVE) && (this->current_state == INACTIVE)) {
         this->active_handler();
-    } else if (!(this->last_state && this->current_state && ACTIVE)) {
+    } else {
         this->inactive_handler();
     }
 }
@@ -49,13 +69,9 @@ void Button::active_on_release_handler(bool current_state) {
 void Button::active_on_press_handler(bool current_state) {
     if ((this->last_state == INACTIVE) && (this->current_state == ACTIVE)) {
         this->active_handler();
-    } else if (!(this->last_state && this->current_state && INACTIVE)) {
+    } else {
         this->inactive_handler();
     }
-}
-
-bool Button::state_is_active() {
-    return digitalRead(this->pin) && this->active_logic_level;
 }
 
 void Button::active_handler() {
@@ -69,7 +85,10 @@ void Button::active_handler() {
 }
 
 void Button::inactive_handler() {
-    this->active_flag = true;
-    this->active_start_time = 0;
+    this->active_start_time = millis();
     this->active_time = 0;
+}
+
+void Button::set_flag_inactive() {
+    this->active_flag = INACTIVE;
 }

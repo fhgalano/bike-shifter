@@ -25,20 +25,20 @@ class Button {
     // Functions
     void init();
     void detect_state();
+    void detection_handler();
     void state_handler(bool current_state);
     void active_on_release_handler(bool current_state);
     void active_on_press_handler(bool current_state);
-    bool state_is_active();
     void active_handler();
     void inactive_handler();
+    void set_flag_inactive();
+    bool state_is_active();
 
  public:
     Button(uint8_t pin, bool active_mode, bool active_on_release);
-    void get_state();
+    bool get_state();
     void add_hold(int32_t hold_target_time);
 };
-
-#endif  // LIB_BUTTON_BUTTON_H_
 
 class Hold {
  private:
@@ -51,3 +51,5 @@ class Hold {
     void init();
     bool hold_flag;
 };
+
+#endif  // LIB_BUTTON_BUTTON_H_
