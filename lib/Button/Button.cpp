@@ -20,6 +20,11 @@ bool Button::get_state() {
     return state;
 }
 
+void Button::detection_handler() {
+    this->detect_state();
+    this->state_handler(this->state_is_active());
+}
+
 // Private
 void Button::init() {
     // Configure hardware
@@ -31,11 +36,6 @@ void Button::init() {
     this->hold_is_active = false;
     this->active_count = 0;
     this->active_time = 0;
-}
-
-void Button::detection_handler() {
-    this->detect_state();
-    this->state_handler(this->state_is_active());
 }
 
 void Button::detect_state() {
