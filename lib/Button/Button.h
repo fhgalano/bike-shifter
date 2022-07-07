@@ -5,6 +5,10 @@
 
 #define ACTIVE true
 #define INACTIVE false
+#define ACTIVE_LOW 0
+#define ACTIVE_HIGH 1
+#define ACTIVE_ON_RELEASE true
+#define ACTIVE_ON_PRESS false
 
 class Button {
  private:
@@ -25,7 +29,6 @@ class Button {
     // Functions
     void init();
     void detect_state();
-    void detection_handler();
     void state_handler(bool current_state);
     void active_on_release_handler(bool current_state);
     void active_on_press_handler(bool current_state);
@@ -37,6 +40,7 @@ class Button {
  public:
     Button(uint8_t pin, bool active_mode, bool active_on_release);
     bool get_state();
+    void detection_handler();
     void add_hold(int32_t hold_target_time);
 };
 
