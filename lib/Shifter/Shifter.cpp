@@ -11,8 +11,11 @@
 
 // PUBLIC
 Shifter::Shifter(int upshift_pin, int downshift_pin) {
-    this->upshift_pin = upshift_pin;
-    this->downshift_pin = downshift_pin;
+    Button upshift(upshift_pin, ACTIVE_LOW, ACTIVE_ON_RELEASE);
+    Button downshift(downshift_pin, ACTIVE_LOW, ACTIVE_ON_RELEASE);
+
+    this->upshift_button = upshift;
+    this->downshift_button = downshift;
     init();
 }
 
@@ -23,10 +26,6 @@ void Shifter::begin(uint8_t shifter_servo_pin) {
 void Shifter::init() {
     this->shift_factor = BASE_SHIFT_FACTOR;
 
-    // Setup Pin Modes
-    pinMode(this->upshift_pin, INPUT);
-    pinMode(this->downshift_pin, INPUT);
-
     // Set servo to starting position
     this->shifter_servo.write(SHIFT_STARTING_POSITION);
     this->servo_position = SHIFT_STARTING_POSITION;
@@ -36,7 +35,7 @@ void Shifter::upshift() {
     // detect direction and update position
     this->servo_position += this->shift_factor;
 
-    // checking for upper limit exceedance 
+    // checking for upper limit exceedance
     this->max_position_correction();
 
     // write position
@@ -47,7 +46,7 @@ void Shifter::downshift() {
     // detect direction and update position
     this->servo_position -= this->shift_factor;
 
-    // checking for upper limit exceedance 
+    // checking for upper limit exceedance
     this->min_position_correction();
 
     // write position
@@ -56,11 +55,8 @@ void Shifter::downshift() {
 
 void Shifter::shift_detection() {
     // get pin states and shift
-    if (this->shift_button_is_active(this->downshift_pin)) {
-        this->downshift_flag = true;
-    } else if (this->shift_button_is_active(this->upshift_pin)) {
-        this->upshift_flag = true;
-    }
+    this->upshift_button.detection_handler();
+    this->downshift_button.detection_handler();
 }
 
 void Shifter::shift_handler() {
@@ -73,7 +69,7 @@ void Shifter::shift_handler() {
 bool Shifter::shift_button_is_active(int pin) {
     int state = digitalRead(pin);
 
-    if ( state == BUTTON_ACTIVE_STATE) {
+    if ( state == BUTTON_ACTIVE_STATE ) {
         return true;
     } else {
         return false;
@@ -85,10 +81,12 @@ void Shifter::max_position_correction() {
 }
 
 void Shifter::min_position_correction() {
-    this->servo_position = max(this->servo_position, MIN_SHIFT_POSITION);
+    this->servo_position = max(this->servo_position, MIN_SHIFT_POSITION); // NOLINT
 }
 
 void Shifter::upshift_handler() {
+    this->upshift_flag = this->upshift_button.get_state();
+
     if (this->upshift_flag) {
         this->upshift();
     }
@@ -96,6 +94,8 @@ void Shifter::upshift_handler() {
 }
 
 void Shifter::downshift_handler() {
+    this->downshift_flag = this->downshift_button.get_state();
+
     if (this->downshift_flag) {
         this->downshift();
     }
